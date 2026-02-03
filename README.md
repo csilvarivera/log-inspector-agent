@@ -1,119 +1,94 @@
-# log-inspector-agent
+# Log Inspector Agent
 
-This is an agent that will inspect logs from Google Cloud Logging and provide insights based on the logs.
+This agent inspects logs from Google Cloud Logging and provides insights, error analysis, and visualizations based on the log data. It is designed to help developers identify root causes and remediation steps for issues in their Google Cloud environments.
 
 ## Project Structure
 
 ```
 log-inspector-agent/
-├── app/         # Core agent code
-│   ├── agent.py               # Main agent logic
-│   ├── agent_engine_app.py    # Agent Engine application logic
-│   └── app_utils/             # App utilities and helpers
-├── .cloudbuild/               # CI/CD pipeline configurations for Google Cloud Build
-├── deployment/                # Infrastructure and deployment scripts
-├── notebooks/                 # Jupyter notebooks for prototyping and evaluation
-├── tests/                     # Unit, integration, and load tests
-├── GEMINI.md                  # AI-assisted development guide
-├── Makefile                   # Development commands
-└── pyproject.toml             # Project dependencies
+├── app/                  # Core agent code
+│   ├── agent.py          # Main agent logic and tool definitions
+│   ├── logging_tools.py  # GCP Logging interaction tools
+│   ├── reporting_tools.py # Summary and chart generation tools
+│   └── agent_engine_app.py # Agent Engine application wrapper
+├── .cloudbuild/          # CI/CD pipeline configurations
+├── deployment/           # Infrastructure and deployment scripts
+├── tests/                # Unit and integration tests
+├── .env.example          # Template for environment variables
+└── pyproject.toml        # Project dependencies and metadata
 ```
-
-> 💡 **Tip:** Use [Gemini CLI](https://github.com/google-gemini/gemini-cli) for AI-assisted development - project context is pre-configured in `GEMINI.md`.
 
 ## Requirements
 
-Before you begin, ensure you have:
-- **uv**: Python package manager (used for all dependency management in this project) - [Install](https://docs.astral.sh/uv/getting-started/installation/) ([add packages](https://docs.astral.sh/uv/concepts/dependencies/) with `uv add <package>`)
-- **Google Cloud SDK**: For GCP services - [Install](https://cloud.google.com/sdk/docs/install)
-- **Terraform**: For infrastructure deployment - [Install](https://developer.hashicorp.com/terraform/downloads)
-- **make**: Build automation tool - [Install](https://www.gnu.org/software/make/) (pre-installed on most Unix-based systems)
+Ensure the following are installed on your system:
 
+- **Python 3.10+**
+- **uv**: Python package manager for dependency management.
+- **Google Cloud SDK**: For authentication and accessing GCP services.
+- **make**: For running development commands.
 
-## Quick Start
+## Getting Started
 
-Install required packages and launch the local development environment:
+### 1. Environment Configuration
+
+Copy the example environment file and fill in your project details:
 
 ```bash
-make install && make playground
+cp .env.example .env
 ```
-> **📊 Observability Note:** Agent telemetry (Cloud Trace) is always enabled. Prompt-response logging (GCS, BigQuery, Cloud Logging) is **disabled** locally, **enabled by default** in deployed environments (metadata only - no prompts/responses). See [Monitoring and Observability](#monitoring-and-observability) for details.
 
-## Commands
+Required variables:
+- `GOOGLE_CLOUD_PROJECT`: Your Google Cloud Project ID.
+- `GOOGLE_CLOUD_LOCATION`: The location for GCP services (e.g., global).
+- `GOOGLE_GENAI_USE_VERTEXAI`: Set to True to use Vertex AI for the Gemini model.
 
-| Command              | Description                                                                                 |
-| -------------------- | ------------------------------------------------------------------------------------------- |
-| `make install`       | Install dependencies using uv                                                               |
-| `make playground`    | Launch local development environment                                                        |
-| `make lint`          | Run code quality checks                                                                     |
-| `make test`          | Run unit and integration tests                                                              |
-| `make deploy`        | Deploy agent to Agent Engine                                                                |
-| `make register-gemini-enterprise` | Register deployed agent to Gemini Enterprise                                  |
-| `make setup-dev-env` | Set up development environment resources using Terraform                                   |
+### 2. Installation
 
-For full command options and usage, refer to the [Makefile](Makefile).
+Install the project dependencies using uv:
 
+```bash
+make install
+```
 
-## Usage
+Key dependencies handled by this project include:
+- `google-adk`: The framework for building the agent.
+- `google-cloud-logging`: For fetching logs from GCP.
+- `matplotlib`: Used for generating log severity distribution charts.
+- `pandas`: Used for data manipulation during log summarization.
 
+### 3. Running Locally
 
-1. **Test:** Explore your agent functionality using the local playground with `make playground`. The playground automatically reloads your agent on code changes.
-2. **Deploy:** Set up and initiate the CI/CD pipelines, customizing tests as necessary. Refer to the [deployment section](#deployment) for comprehensive instructions. For streamlined infrastructure deployment, simply run `uvx agent-starter-pack setup-cicd`. Check out the [`agent-starter-pack setup-cicd` CLI command](https://googlecloudplatform.github.io/agent-starter-pack/cli/setup_cicd.html). Currently supports GitHub with both Google Cloud Build and GitHub Actions as CI/CD runners.
-3. **Monitor:** Track performance and gather insights using BigQuery telemetry data, Cloud Logging, and Cloud Trace to iterate on your application.
+Launch the local development playground:
 
-The project includes a `GEMINI.md` file that provides context for AI tools like Gemini CLI when asking questions about your template.
+```bash
+make playground
+```
 
+This will start the ADK web interface where you can interact with the agent.
+
+## Key Features
+
+- **GCP Log Retrieval**: Tools to list and search logs using advanced filters and time ranges.
+- **Severity Extraction Fallback**: Automatic extraction of severity levels from log payloads when official labels are missing.
+- **Visual Analytics**: Generation of severity distribution charts with clear labels.
+- **Formatted Insights**: Balanced log display using tables for metadata and blockquotes for full messages.
+
+## Sample Queries
+
+You can ask the agent questions like:
+
+- "Show me the last 5 errors in the ReasoningEngine logs from the last hour."
+- "Search for 'timeout' in my Cloud Run logs and show me a severity distribution chart."
+- "Analyze logs for project [PROJECT_ID] and tell me if there are any critical issues."
+- "What is the distribution of log severities for my GKE cluster in the last 24 hours?"
 
 ## Deployment
 
-> **Note:** For a streamlined one-command deployment of the entire CI/CD pipeline and infrastructure using Terraform, you can use the [`agent-starter-pack setup-cicd` CLI command](https://googlecloudplatform.github.io/agent-starter-pack/cli/setup_cicd.html). Currently supports GitHub with both Google Cloud Build and GitHub Actions as CI/CD runners.
-
-### Dev Environment
-
-You can test deployment towards a Dev Environment using the following command:
+To deploy the agent to Google Cloud Agent Engine:
 
 ```bash
-gcloud config set project <your-dev-project-id>
+gcloud config set project [YOUR-PROJECT-ID]
 make deploy
 ```
 
-
-The repository includes a Terraform configuration for the setup of the Dev Google Cloud project.
-See [deployment/README.md](deployment/README.md) for instructions.
-
-### Production Deployment
-
-The repository includes a Terraform configuration for the setup of a production Google Cloud project. Refer to [deployment/README.md](deployment/README.md) for detailed instructions on how to deploy the infrastructure and application.
-
-## Monitoring and Observability
-
-The application provides two levels of observability:
-
-**1. Agent Telemetry Events (Always Enabled)**
-- OpenTelemetry traces and spans exported to **Cloud Trace**
-- Tracks agent execution, latency, and system metrics
-
-**2. Prompt-Response Logging (Configurable)**
-- GenAI instrumentation captures LLM interactions (tokens, model, timing)
-- Exported to **Google Cloud Storage** (JSONL), **BigQuery** (external tables), and **Cloud Logging** (dedicated bucket)
-
-| Environment | Prompt-Response Logging |
-|-------------|-------------------------|
-| **Local Development** (`make playground`) | ❌ Disabled by default |
-| **Deployed Environments** (via Terraform) | ✅ **Enabled by default** (privacy-preserving: metadata only, no prompts/responses) |
-
-**To enable locally:** Set `LOGS_BUCKET_NAME` and `OTEL_INSTRUMENTATION_GENAI_CAPTURE_MESSAGE_CONTENT=NO_CONTENT`.
-
-**To disable in deployments:** Edit Terraform config to set `OTEL_INSTRUMENTATION_GENAI_CAPTURE_MESSAGE_CONTENT=false`.
-
-See the [observability guide](https://googlecloudplatform.github.io/agent-starter-pack/guide/observability.html) for detailed instructions, example queries, and visualization options.
-
-## Keeping Up-to-Date
-
-To upgrade this project to the latest agent-starter-pack version:
-
-```bash
-uvx agent-starter-pack upgrade
-```
-
-This intelligently merges updates while preserving your customizations. Use `--dry-run` to preview changes first. See the [upgrade CLI reference](https://googlecloudplatform.github.io/agent-starter-pack/cli/upgrade.html) for details.
+Refer to the deployment directory for more detailed infrastructure setup instructions.
