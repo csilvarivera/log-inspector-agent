@@ -1,0 +1,8 @@
+{
+  "track_id": "update_style_guides_20260203",
+  "type": "chore",
+  "status": "new",
+  "created_at": "2026-02-03T11:45:00Z",
+  "updated_at": "2026-02-03T11:45:00Z",
+  "description": "update the code style docs in code_styleguides to incorporate the ones in the GEMINI.md file in this project"
+}
