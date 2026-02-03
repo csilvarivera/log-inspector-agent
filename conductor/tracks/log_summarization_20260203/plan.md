@@ -16,7 +16,7 @@
 - [x] Task: Conductor - User Manual Verification 'Phase 2: Chart Generation' (Protocol in workflow.md)
 
 ## Phase 3: Agent Integration
-- [~] Task: Register Reporting Tools
-    - [ ] Update `app/agent.py` to include `generate_log_summary` and `generate_log_chart`.
-    - [ ] Update agent instructions to encourage using visualization for summary requests.
-- [ ] Task: Conductor - User Manual Verification 'Phase 3: Agent Integration' (Protocol in workflow.md)
+- [x] Task: Register Reporting Tools (d0599f9)
+    - [x] Update `app/agent.py` to include `generate_log_summary` and `generate_log_chart`.
+    - [x] Update agent instructions to encourage using visualization for summary requests.
+- [x] Task: Conductor - User Manual Verification 'Phase 3: Agent Integration' (Protocol in workflow.md)
