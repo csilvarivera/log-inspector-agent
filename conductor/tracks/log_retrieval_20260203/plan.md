@@ -16,7 +16,7 @@
 - [x] Task: Conductor - User Manual Verification 'Phase 2: Core Tool Implementation' (Protocol in workflow.md)
 
 ## Phase 3: Agent Integration and Testing
-- [ ] Task: Register Tools with Agent
+- [~] Task: Register Tools with Agent
     - [ ] Add `list_gcp_logs` and `search_gcp_logs` to the `Agent` configuration in `app/agent.py`.
     - [ ] Update agent instructions to use these tools for log analysis.
 - [ ] Task: Verification in Playground
