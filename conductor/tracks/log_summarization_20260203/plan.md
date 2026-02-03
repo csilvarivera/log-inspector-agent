@@ -15,7 +15,7 @@
     - [x] Implement the function to create a PNG chart from summary data.
 - [x] Task: Conductor - User Manual Verification 'Phase 2: Chart Generation' (Protocol in workflow.md)
 
-## Phase 3: Agent Integration
+## Phase 3: Agent Integration [checkpoint: 17d32d7]
 - [x] Task: Register Reporting Tools (d0599f9)
     - [x] Update `app/agent.py` to include `generate_log_summary` and `generate_log_chart`.
     - [x] Update agent instructions to encourage using visualization for summary requests.
