@@ -1,5 +1,6 @@
 from collections import Counter
 from google.adk.tools import ToolContext
+from google.genai import types
 
 def generate_log_summary(logs: list[dict], tool_context: ToolContext = None) -> dict:
     """Generates a statistical summary of logs by severity.
@@ -40,14 +41,14 @@ except ImportError:
 import tempfile
 import os
 
-def generate_log_chart(summary_data: dict, tool_context: ToolContext = None) -> dict:
+async def generate_log_chart(summary_data: dict, tool_context: ToolContext = None) -> dict:
     """Generates a bar chart from log summary data.
 
     Args:
         summary_data: A dictionary where keys are categories (e.g., severity) and values are counts.
 
     Returns:
-        A dictionary containing the status and the path to the generated chart image.
+        A dictionary containing the status and the name of the generated chart artifact.
     """
     if plt is None:
         return {
@@ -74,9 +75,21 @@ def generate_log_chart(summary_data: dict, tool_context: ToolContext = None) -> 
         plt.savefig(path)
         plt.close()
 
+        # Save as ADK artifact
+        artifact_filename = "log_severity_chart.png"
+        with open(path, "rb") as f:
+            image_bytes = f.read()
+        
+        # Clean up temp file
+        os.remove(path)
+
+        if tool_context:
+            artifact = types.Part.from_bytes(data=image_bytes, mime_type="image/png")
+            await tool_context.save_artifact(filename=artifact_filename, artifact=artifact)
+
         return {
             "status": "success",
-            "chart_path": path
+            "artifact_name": artifact_filename
         }
     except Exception as e:
         return {

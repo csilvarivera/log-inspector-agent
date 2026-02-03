@@ -9,7 +9,9 @@ async def main():
     session = await session_service.create_session(user_id="test_user", app_name="test")
     runner = Runner(agent=root_agent, session_service=session_service, app_name="test")
 
-    query = "Please list the last 5 error logs in my project."
+    # First, list some logs to populate context (simulation, though the agent will fetch real logs)
+    # Then ask for a chart
+    query = "Please analyze recent logs and generate a chart of log severity."
     print(f"User: {query}")
     
     async for event in runner.run_async(
