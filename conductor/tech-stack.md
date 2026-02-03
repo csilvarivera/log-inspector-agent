@@ -11,6 +11,8 @@
     - **Method:** Google Cloud Logging API
     - **Library:** `google-cloud-logging` Python client
     - **Integration:** Can be exposed as a tool to the agent (e.g., via `FunctionTool` in ADK or an MCP server if using Model Context Protocol).
+- **Visualization & Reporting:**
+    - **Libraries:** `matplotlib`, `pandas`
 - **AI Models:** Gemini family (via Google ADK)
 
 ## Infrastructure & Deployment
