@@ -3,6 +3,29 @@ from google.adk.tools import ToolContext
 from google.protobuf.json_format import MessageToDict
 from google.protobuf.message import Message
 import datetime
+import re
+
+def get_severity(severity, payload):
+    """Fallback to extract severity from payload if it's None."""
+    if severity and severity != "DEFAULT":
+        return severity
+    
+    if isinstance(payload, str):
+        # Common patterns: "INFO: ...", "ERROR - ...", "[WARNING] ..."
+        severity_map = {
+            "CRITICAL": r"\b(CRITICAL|FATAL)\b",
+            "ERROR": r"\bERROR\b",
+            "WARNING": r"\b(WARNING|WARN)\b",
+            "INFO": r"\bINFO\b",
+            "DEBUG": r"\bDEBUG\b"
+        }
+        
+        payload_upper = payload.upper()
+        for s, pattern in severity_map.items():
+            if re.search(pattern, payload_upper):
+                return s
+                
+    return severity or "DEFAULT"
 
 def sanitize_payload(payload):
     """Sanitizes the log payload for serialization.
@@ -52,9 +75,13 @@ def list_gcp_logs(project_id: str, severity: str = None, resource_type: str = No
         
         logs = []
         for entry in entries:
+            # Fallback for null severity
+            payload = sanitize_payload(entry.payload)
+            severity_val = get_severity(entry.severity, payload)
+            
             logs.append({
-                "payload": sanitize_payload(entry.payload),
-                "severity": entry.severity,
+                "payload": payload,
+                "severity": severity_val,
                 "timestamp": str(entry.timestamp),
                 "log_name": entry.log_name,
                 "resource_type": entry.resource.type if entry.resource else None
@@ -94,9 +121,13 @@ def search_gcp_logs(project_id: str, query: str, severity: str = None, resource_
         
         logs = []
         for entry in entries:
+            # Fallback for null severity
+            payload = sanitize_payload(entry.payload)
+            severity_val = get_severity(entry.severity, payload)
+            
             logs.append({
-                "payload": sanitize_payload(entry.payload),
-                "severity": entry.severity,
+                "payload": payload,
+                "severity": severity_val,
                 "timestamp": str(entry.timestamp),
                 "log_name": entry.log_name,
                 "resource_type": entry.resource.type if entry.resource else None

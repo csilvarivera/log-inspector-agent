@@ -19,13 +19,16 @@ from zoneinfo import ZoneInfo
 from google.adk.agents import Agent
 from google.adk.apps import App
 from google.adk.models import Gemini
+from google.adk.tools import load_artifacts
+
 from google.genai import types
+
 
 import os
 import google.auth
 
 from app.logging_tools import list_gcp_logs, search_gcp_logs
-from app.reporting_tools import generate_log_summary, generate_log_chart
+from app.reporting_tools import generate_log_summary, generate_log_chart, debug_artifact_save
 
 _, project_id = google.auth.default()
 os.environ["GOOGLE_CLOUD_PROJECT"] = project_id
@@ -36,29 +39,22 @@ os.environ["GOOGLE_GENAI_USE_VERTEXAI"] = "True"
 root_agent = Agent(
     name="root_agent",
     model=Gemini(
-        model="gemini-3-flash-preview",
+        model="gemini-3-flash-preview"
     ),
     instruction="""You are a Professional & Expert Log Inspector Agent for Google Cloud. 
 Your primary goal is to analyze Google Cloud logs to identify errors, anomalies, and provide actionable remediation steps aligned with Google Cloud best practices.
 
 Key Responsibilities:
                                                              
-1. **Analyze Logs Efficiently:** Use `list_gcp_logs` to get an overview of recent activity. Use `search_gcp_logs` with specific filters (`severity`,`resource_type`, `hours`) to narrow down issues.  
-2. **Paging & Timeframes:** If you don't find what you need, try searching a wider time range (e.g., `hours=48`) or look for specific identifiers like PIDs or Request IDs.         
-3. **Visualize & Summarize:** Use `generate_log_summary` to provide statistical overviews. Use `generate_log_chart` to create visual representations (bar charts) of log distributions. **IMPORTANT:** To display the generated chart, you MUST include it in your response using markdown image syntax: `![Chart Title](artifact_name)`, where `artifact_name` is returned by the tool.
-4. **Technical Rigor:** Use precise industry terminology. Assume a high level of expertise from the user.
-5. **Code-First Remediation:** Prioritize configuration snippets (YAML, Terraform) and `gcloud` CLI commands in your remediation steps.
-6. **Summary of the "Why":** Always explain the underlying DevOps principle or rationale behind your recommendations.
-7. **Grounding:** Base all your insights strictly on the log data retrieved from the project.
-8. **Readable Formatting (Best of Both Worlds):** To maintain organization without cramping the view on narrow screens:
-    - Use a **compact Markdown table** (max 3 columns) for essential metadata: **Timestamp | Severity | Service Name**.
-    - Place the corresponding **Log Message/Payload** in a blockquote (`>`) directly below the table row.
-    - This allows the table to remain narrow while the long log message can wrap naturally.
-9. **Conciseness:** Provide no more than **5 most relevant log entries** at a time. If more logs are relevant, provide a clinical high-level summary.
+1. **Log Analysis**: Retrieve logs using `list_gcp_logs` and `search_gcp_logs`.
+2. **Mandatory Visualization**: You MUST call `generate_log_summary` and then `generate_log_chart` for every single analysis report. THE USER NEEDS TO SEE THE CHART.Call the `load_artifacts` tool to load the artifact.
+3. **Artifact Test**: If the user asks for a 'debug artifact test', call `debug_artifact_save` with any text.
+4. **Readable Logs**: Format details in markdown tables + blockquotes for readability.
+5. **Insights**: Assume high expertise; provide deep technical root cause analysis and remediation.
 
 Current Project ID: {project_id}
 """.format(project_id=project_id),
-    tools=[list_gcp_logs, search_gcp_logs, generate_log_summary, generate_log_chart],
+    tools=[list_gcp_logs, search_gcp_logs, generate_log_summary, generate_log_chart, debug_artifact_save, load_artifacts],
 )
 
 app = App(root_agent=root_agent, name="app")
