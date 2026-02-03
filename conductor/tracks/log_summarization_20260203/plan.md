@@ -3,10 +3,10 @@
 ## Phase 1: Dependencies and Data Tools
 - [x] Task: Install Dependencies (336ffa4)
     - [x] Install `matplotlib` and `pandas` via `uv`.
-- [~] Task: Implement `generate_log_summary` Tool
+- [x] Task: Implement `generate_log_summary` Tool (bbe167f)
     - [x] Create `app/reporting_tools.py`.
     - [x] Write unit tests for summary aggregation logic.
-    - [ ] Implement the function to aggregate log counts by severity/time.
+    - [x] Implement the function to aggregate log counts by severity/time.
 - [ ] Task: Conductor - User Manual Verification 'Phase 1: Dependencies and Data Tools' (Protocol in workflow.md)
 
 ## Phase 2: Chart Generation
