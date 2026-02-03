@@ -34,10 +34,9 @@ root_agent = Agent(
     name="root_agent",
     model=Gemini(
         model="gemini-3-flash-preview",
-        retry_options=types.HttpRetryOptions(attempts=3),
     ),
     instruction="You are a helpful AI assistant designed to provide accurate and useful information.",
-    tools=[get_weather, get_current_time],
+    tools=[],
 )
 
-app = App(root_agent=root_agent, name="app", retry_options=types.HttpRetryOptions(attempts=3))
+app = App(root_agent=root_agent, name="app")
