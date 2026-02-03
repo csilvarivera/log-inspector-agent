@@ -10,10 +10,10 @@
 - [x] Task: Conductor - User Manual Verification 'Phase 1: Dependencies and Data Tools' (Protocol in workflow.md)
 
 ## Phase 2: Chart Generation
-- [~] Task: Implement `generate_log_chart` Tool
-    - [ ] Write unit tests for chart generation (mocking matplotlib to check calls, or verifying file existence).
-    - [ ] Implement the function to create a PNG chart from summary data.
-- [ ] Task: Conductor - User Manual Verification 'Phase 2: Chart Generation' (Protocol in workflow.md)
+- [x] Task: Implement `generate_log_chart` Tool (1215489)
+    - [x] Write unit tests for chart generation (mocking matplotlib to check calls, or verifying file existence).
+    - [x] Implement the function to create a PNG chart from summary data.
+- [x] Task: Conductor - User Manual Verification 'Phase 2: Chart Generation' (Protocol in workflow.md)
 
 ## Phase 3: Agent Integration
 - [ ] Task: Register Reporting Tools
