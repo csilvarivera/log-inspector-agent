@@ -91,4 +91,12 @@ gcloud config set project [YOUR-PROJECT-ID]
 make deploy
 ```
 
-Refer to the deployment directory for more detailed infrastructure setup instructions.
+### Deployment Configuration
+
+The `make deploy` command automates several steps for a robust Agent Engine deployment:
+- **Dependency Management**: Automatically exports dependencies from `pyproject.toml` to a temporary requirements file. This project is pinned to **google-adk v1.22.0** for Agent Engine stability.
+- **Telemetry**: Enforces `GOOGLE_CLOUD_AGENT_ENGINE_ENABLE_TELEMETRY` and `OTEL_INSTRUMENTATION_GENAI_CAPTURE_MESSAGE_CONTENT` to `true` by default to ensure full observability.
+- **Code Packaging**: Bundles the entire `app/` directory as a source package, ensuring all your custom scripts and utilities are available in the remote environment.
+- **Customization**: You can pass additional environment variables using the `--set-env-vars` flag if needed (e.g., `make deploy set-env-vars=MY_VAR=value`).
+
+Refer to the [deployment/](./deployment) directory for more detailed infrastructure setup instructions.

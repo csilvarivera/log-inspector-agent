@@ -31,10 +31,6 @@ from app.logging_tools import list_gcp_logs, search_gcp_logs
 from app.reporting_tools import generate_log_summary, generate_log_chart, debug_artifact_save
 
 _, project_id = google.auth.default()
-os.environ["GOOGLE_CLOUD_PROJECT"] = project_id
-os.environ["GOOGLE_CLOUD_LOCATION"] = "global"
-os.environ["GOOGLE_GENAI_USE_VERTEXAI"] = "True"
-
 
 root_agent = Agent(
     name="root_agent",
